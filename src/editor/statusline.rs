@@ -3,9 +3,9 @@ use crate::utils::databuffer::DataBuffer;
 pub struct Statusline{
         pub height: usize,
         pub width: usize,
-        pub(super)x_pos:usize,
-        pub(super)y_pos: usize,
-        pub(super)status_buf: DataBuffer
+        x_pos:usize, //column
+        y_pos: usize, // row or line number
+        status_buf: DataBuffer
 }
 
 impl Statusline

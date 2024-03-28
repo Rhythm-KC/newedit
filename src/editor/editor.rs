@@ -25,7 +25,7 @@ impl<'a> Editor<'a>
         Editor{text_window, footer, editor_buffer:DataBuffer::new(), output}
     }
 
-    pub fn open_editor(&mut self, file_name: Option<String>)
+    pub fn open_editor(&mut self, file_name: Option<&'a String>)
     {
         let bufreader : Option<&mut BufReader<File>> = None;
         if file_name.is_none(){

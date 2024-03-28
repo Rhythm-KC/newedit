@@ -14,6 +14,7 @@ use crate::editor::{editor::Editor, editorstate::{EditorState, EditorWindow}, fo
 fn main()
 {
     let args: Vec<String> = env::args().collect();
+    let filename = args.get(1);
     let terminal = Terminal::enable_raw();
     if terminal.is_err(){
         eprint!("Error reading enabling terminal");
@@ -50,7 +51,7 @@ fn main()
     let mut io = io::stdout();
 
     let mut editor = Editor::new(&mut textwindow, &mut footer, &mut io);
-    editor.open_editor(args.get(1).cloned());
+    editor.open_editor(filename);
     loop
     {
         editor.process_input();

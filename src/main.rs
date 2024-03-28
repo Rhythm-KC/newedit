@@ -52,7 +52,7 @@ fn main()
 
     let mut editor = Editor::new(&mut textwindow, &mut footer, &mut io);
     editor.open_editor(filename);
-    loop
+    while editor.is_running()
     {
         editor.process_input();
         let _ = editor.render_editor();

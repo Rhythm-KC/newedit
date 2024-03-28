@@ -55,4 +55,9 @@ impl<'a> TextWindow<'a>
             Ok("Opening a new File")           
         }
     }
+    pub fn is_running(&self) -> bool
+    {
+        self.editorstate.is_running()
+    }
+    
 }

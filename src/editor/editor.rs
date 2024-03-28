@@ -64,6 +64,10 @@ impl<'a> Editor<'a>
             Err(e) => {self.post_msg(e.to_string())}
         }
     }
+    pub fn is_running(&self) -> bool
+    {
+        self.text_window.is_running()
+    }
 
     pub fn render_editor(&mut self) -> io::Result<()>
     {

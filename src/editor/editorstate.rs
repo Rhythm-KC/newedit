@@ -16,7 +16,8 @@ pub struct EditorState<'a>{
     cy: usize,
     rows: Vec<DataBuffer>,
     pub num_rows: usize,
-    window: &'a EditorWindow
+    window: &'a EditorWindow,
+    open: bool,
 }
 
 impl EditorWindow{
@@ -55,6 +56,7 @@ impl<'a> EditorState<'a>{
             Key::Other(_val) => {Ok(())},
             Key::ArrowKey(arrowtype) => {self.move_cursor(arrowtype)}
             Key::Ctrlkey(ctrlkey)=> {self.move_ctrl_keys(ctrlkey)}
+            Key::Quit =>{self.open = false; Ok(())}
             _ =>{Ok(())}
         }
 
@@ -169,5 +171,11 @@ impl<'a> EditorState<'a>{
         let char_index = col_offset + min(row.len() - col_offset, self.window.width);
         buf.append_all(&row.get_data()[col_offset..char_index]);
     }
+
+    pub fn is_running(&self) -> bool
+    {
+        self.open
+    }
+
 
 }

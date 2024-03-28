@@ -35,6 +35,10 @@ impl<'a> Editor<'a>
         let file = File::open(file_name.as_ref().unwrap());
         if file.is_err()
         {
+            match self.text_window.open_text_window(None){
+                Ok(msg)  => self.post_msg(msg.to_string()),
+                Err(msg)  => self.post_msg(msg.to_string()),
+            };
             self.post_msg(format!("Cannot open file:{}", file_name.unwrap()));
             return;
         }

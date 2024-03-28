@@ -1,4 +1,14 @@
 static ESC_SEQ: &str = "\x1b"; 
+
+pub enum Rendition
+{
+    BOLD,
+    UNDERLINE,
+    DEFAULT,
+    INVERTEDCOLORS,
+    BLINK,
+}
+
 fn create_command(cmd: &'static str) -> String
 {
     format!("{}{}", ESC_SEQ, cmd)
@@ -35,4 +45,16 @@ pub fn move_cursor_to_top() -> String
 pub fn show_cursor() -> String
 {
     create_command("[?25h")
+}
+
+pub fn graphic_rendition_cmd(rendition_type: Rendition) -> String
+{
+    let formatter = |code:u8| format!("{}[{}m", ESC_SEQ, code);
+    match rendition_type{
+        Rendition::DEFAULT => {formatter(0)},
+        Rendition::BOLD=> {formatter(1)},
+        Rendition::UNDERLINE=> {formatter(4)},
+        Rendition::BLINK=> {formatter(5)},
+        Rendition::INVERTEDCOLORS=> {formatter(7)},
+    }
 }

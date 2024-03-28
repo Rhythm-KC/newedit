@@ -47,7 +47,7 @@ impl Drop for Terminal
         let clear_screen = terminalcommands::clear_entire_screen();
         let move_to_top = terminalcommands::move_cursor_to_top();
         let mut io = stdout().lock();
-        //let _ = io.write(clear_screen.as_bytes());
+        let _ = io.write(clear_screen.as_bytes());
         let _ = io.write(move_to_top.as_bytes());
         let _ = io.flush(); 
         

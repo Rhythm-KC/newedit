@@ -5,8 +5,11 @@ mod utils;
 use std::env;
 
 use std::io;
+use std::io::Write;
 use std::usize;
 
+
+use utils::terminalcommands;
 
 use crate::terminal::terminal::Terminal;
 use crate::editor::{editor::Editor, editorstate::{EditorState, EditorWindow}, footer::Footer, leftline::Leftline, messageline::Messageline, statusline::Statusline, textwindow::TextWindow};
@@ -48,7 +51,10 @@ fn main()
     let window = EditorWindow::new(editorstate_widht, text_window_height, 0, editorstate_min_col_cordi);
     let mut editorstate = EditorState::new(&window);
     let mut textwindow = TextWindow::new(text_window_height, text_window_widht, &leftline, &mut editorstate);
+
     let mut io = io::stdout();
+    let _ = io.lock().write(terminalcommands::clear_entire_screen().as_bytes());
+    let _ = io.lock().write(terminalcommands::move_cursor_to_top().as_bytes());
 
     let mut editor = Editor::new(&mut textwindow, &mut footer, &mut io);
     editor.open_editor(filename);

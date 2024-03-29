@@ -59,6 +59,10 @@ impl<'a> TextWindow<'a>
     {
         self.editorstate.get_line_numbers()
     }
+    pub fn get_cursor_pos(&self) -> (usize, usize)
+    {
+        self.editorstate.get_cursor_position()
+    }
     pub fn is_running(&self) -> bool
     {
         self.editorstate.is_running()

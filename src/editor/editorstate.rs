@@ -175,8 +175,13 @@ impl<'a> EditorState<'a>{
     pub fn get_line_numbers(&self) -> (usize, usize)
     {
         (self.cy + 1, self.cx + 1,)
-     }
+    }
 
+    pub fn get_cursor_position(&self) -> (usize, usize)
+    {
+        (min(self.cy+1, self.window.height), self.cx+self.window.x_min_pos)
+    }
+    
     pub fn is_running(&self) -> bool
     {
         self.open

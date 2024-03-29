@@ -18,8 +18,10 @@ impl<'a> Footer<'a>{
         self.messageline.add_message(msg)
     }
 
-    pub(crate) fn add_footer_to_buffer(&self, editor_buffer: &mut DataBuffer)
+    pub(crate) fn add_footer_to_buffer(&mut self, editor_buffer: &mut DataBuffer, cx: usize, cy: usize)
     {
+        editor_buffer.append_all(self.statusline.get_formatted_statusline(&self.filename.cloned(), cx, cy).get_data().as_slice());
+        self.messageline.get_formatted_message(editor_buffer);
     }
 
 }

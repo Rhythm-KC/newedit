@@ -172,6 +172,11 @@ impl<'a> EditorState<'a>{
         buf.append_all(&row.get_data()[col_offset..char_index]);
     }
 
+    pub fn get_line_numbers(&self) -> (usize, usize)
+    {
+        (self.cy + 1, self.cx + 1,)
+     }
+
     pub fn is_running(&self) -> bool
     {
         self.open

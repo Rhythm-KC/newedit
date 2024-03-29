@@ -2,14 +2,15 @@ use crate::{editor::{messageline::Messageline, statusline::Statusline}, utils::d
 
 
 pub struct Footer<'a>{
+    filename: Option<&'a String>,
     statusline: &'a mut Statusline,
     messageline: &'a mut Messageline
 }
 
 impl<'a> Footer<'a>{
     
-    pub fn new(statusline: &'a mut Statusline, messageline: &'a mut Messageline) -> Self{
-        Footer{statusline, messageline}
+    pub fn new(statusline: &'a mut Statusline, messageline: &'a mut Messageline, filename: Option<&'a String>) -> Self{
+        Footer{filename, statusline, messageline}
     }
 
 

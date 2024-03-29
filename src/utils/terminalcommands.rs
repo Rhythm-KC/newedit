@@ -20,7 +20,7 @@ pub fn clear_entire_screen() -> String
 
 pub fn move_cursor_command(x_coord:usize, y_coord:usize) -> String
 {
-    format!("{}[{}:{}H",ESC_SEQ, x_coord, y_coord)
+    format!("{}[{};{}H",ESC_SEQ, x_coord, y_coord)
 }
 
 pub fn earase_in_line() -> String

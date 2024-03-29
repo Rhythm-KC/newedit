@@ -6,14 +6,14 @@ use crate::{editor::keys::{ArrowType, CtrlKeys, Key}, utils::databuffer::DataBuf
 pub struct EditorWindow{
     width: usize,
     height: usize,
-    x_min_pos: usize,
-    y_min_pos: usize,
+    x_min_pos: usize, // col
+    y_min_pos: usize, // row line number
 }
 
 pub struct EditorState<'a>{
     // current cursor position with respect to the entire terminal
-    cx: usize,
-    cy: usize,
+    cx: usize, // the column position in  on the editor window
+    cy: usize, // row position on the text window min can be 0 max can go up to the number of col
     rows: Vec<DataBuffer>,
     pub num_rows: usize,
     window: &'a EditorWindow,
@@ -29,7 +29,7 @@ impl EditorWindow{
 impl<'a> EditorState<'a>{
 
     pub fn new(window: &'a EditorWindow) -> Self{
-        EditorState{cx: window.x_min_pos, cy: window.y_min_pos, num_rows:0, rows: Vec::new(), window}
+        EditorState{cx: 0, cy: 0, num_rows:0, rows: Vec::new(), window, open:true}
     }
 
     fn move_cursor(&mut self, arrow: ArrowType) -> Result<(), &'static str>{
@@ -63,19 +63,22 @@ impl<'a> EditorState<'a>{
     }
 
     fn move_up(&mut self) -> Result<(), &'static str>{
-        if self.cy > self.window.y_min_pos{
+        if self. cy > self.window.y_min_pos {
             self.cy -= 1;
             self.validate_row_cursor_position();
-            return Ok(());
         }
-        Err("Invalid Editor state")
+        else
+        {
+            self.cy = self.window.y_min_pos;
+        }
+        Ok(())
     }
 
     fn move_down(&mut self) -> Result<(), &'static str> {
         if self.cy == usize::max_value(){
             return Err("Max limit reached");
         }
-        if self.cy != max(self.num_rows, self.window.height) - 1{
+        if self.cy < max(self.num_rows, self.window.height) - 1{
             self.cy += 1;
         }
         self.validate_row_cursor_position();
@@ -84,18 +87,22 @@ impl<'a> EditorState<'a>{
     }
 
     fn move_left(&mut self) -> Result<(), &'static str>{
-        if self.cx > self.window.x_min_pos{
+        if self.cx > 0{
             self.cx -= 1;
         }
         else{
             self.move_up()?;
-            self.move_to_end_of_row()?;
+            if self.cy !=0
+            {
+                self.move_to_end_of_row()?;
+
+            }
         }
         Ok(())
     }
 
     fn move_right(&mut self) -> Result<(), &'static str>{
-        let max_right = self.rows[self.cy].get_data().len() + 1;
+        let max_right = self.rows[self.cy].get_data().len();
         if self.cx < max_right{
             self.cx += 1;
         }
@@ -107,13 +114,13 @@ impl<'a> EditorState<'a>{
         Ok(())
     }
     fn move_to_end_of_row(&mut self)-> Result<(), &'static str>{
-        self.cx = self.rows[self.cy].get_data().len() + 1;
+        self.cx = self.rows[self.cy].get_data().len();
         self.validate_row_cursor_position();
         Ok(())
     }
 
     fn move_to_start_of_the_row(&mut self)-> Result<(), &'static str>{
-        self.cx = self.window.x_min_pos;
+        self.cx = 0;
         self.validate_row_cursor_position();
         Ok(())
     }
@@ -143,33 +150,36 @@ impl<'a> EditorState<'a>{
     }
 
     fn get_col_offset(&self) -> usize{
-        if self.cx >= self.window.width{
+        if self.cx > self.window.width - 1{
             return self.cx - self.window.width + 1;
         }
         0
     }
 
     fn validate_row_cursor_position(&mut self){
-        if self.cx > self.rows[self.cy].get_data().len() + 1{
-            self.cx = self.rows[self.cy].get_data().len() + 1
+        if self.cx > self.rows[self.cy].get_data().len(){
+            self.cx = self.rows[self.cy].get_data().len();
         }
     }
 
-    // returns the x coordinate and the y coordinate on the screen 
-    pub fn get_cur_pos(&self ) -> (usize, usize){
-        (self.cx + self.window.x_min_pos, self.cy)
-    }
-
-    pub fn fill_data_buffer_with_line(&self, row:usize, buf: &mut DataBuffer)
+    pub fn fill_data_buffer_with_line(&self, row:usize, buf: &mut DataBuffer)-> Result<(), String>
     {
         let row_index = min(self.rows.len(), row+self.get_row_offset());
-        let row = self.rows.get(row_index).unwrap();
+        let row = match self.rows.get(row_index)
+        {
+            Some(data) => data,
+            None => {
+                return Err(format!("Error reading row: {}", row_index));
+            },
+        };
+        
         let col_offset = self.get_col_offset();
         if col_offset >= row.len(){
-            return
+            return Ok(())
         }
-        let char_index = col_offset + min(row.len() - col_offset, self.window.width);
+        let char_index = min(row.len(), self.window.width + col_offset);
         buf.append_all(&row.get_data()[col_offset..char_index]);
+        return Ok(())
     }
 
     pub fn get_line_numbers(&self) -> (usize, usize)
@@ -179,7 +189,7 @@ impl<'a> EditorState<'a>{
 
     pub fn get_cursor_position(&self) -> (usize, usize)
     {
-        (min(self.cy+1, self.window.height), self.cx+self.window.x_min_pos)
+        (min(self.cy+1, self.window.height), self.cx + self.window.x_min_pos)
     }
     
     pub fn is_running(&self) -> bool

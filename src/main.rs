@@ -48,7 +48,7 @@ fn main()
     let editorstate_min_col_cordi = leftline_width + 1;
 
     let leftline = Leftline::new(text_window_height, leftline_width);
-    let window = EditorWindow::new(editorstate_widht, text_window_height, 0, editorstate_min_col_cordi);
+    let window = EditorWindow::new(editorstate_widht, text_window_height, editorstate_min_col_cordi, 0);
     let mut editorstate = EditorState::new(&window);
     let mut textwindow = TextWindow::new(text_window_height, text_window_widht, &leftline, &mut editorstate);
 

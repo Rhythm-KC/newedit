@@ -1,14 +1,12 @@
-use crate::utils::databuffer::DataBuffer;
 
 pub struct Leftline{
     pub height: usize,
     pub width: usize,
-    line_buf: DataBuffer
 }
 
 impl Leftline{
     pub fn new(height: usize, width:usize) ->Self{
-        Leftline{height, width, line_buf: DataBuffer::new()}
+        Leftline{height, width}
     }
 
     pub fn add_left_line_data_to_buf(&self, buf: &mut DataBuffer)

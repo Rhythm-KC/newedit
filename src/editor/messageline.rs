@@ -1,3 +1,5 @@
+use crate::utils::{databuffer::DataBuffer, terminalcommands};
+
 pub struct Messageline{
     pub height:usize,
     pub width: usize,
@@ -14,10 +16,14 @@ impl Messageline{
     pub fn add_message(&mut self, msg: String){
            self.message = Some(msg); 
     }
-
-    pub fn get_msg_as_bytes(&self) -> Option<&String>
+    pub fn get_formatted_message(&self, buf: &mut DataBuffer)
     {
-        self.message.as_ref()
-        
+        if let Some(message) = &self.message{
+            let move_to_msg = terminalcommands::move_cursor_command(self.x_pos, self.y_pos + 2);
+            buf.append_all(move_to_msg.as_bytes());
+            buf.append_all(message.as_bytes());
+        }
+
     }
+
 }

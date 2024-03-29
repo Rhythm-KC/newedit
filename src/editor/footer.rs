@@ -2,15 +2,14 @@ use crate::{editor::{messageline::Messageline, statusline::Statusline}, utils::d
 
 
 pub struct Footer<'a>{
-    statusline: &'a Statusline,
+    statusline: &'a mut Statusline,
     messageline: &'a mut Messageline
 }
 
 impl<'a> Footer<'a>{
     
-    pub fn new(statusline: &'a Statusline, messageline: &'a mut Messageline) -> Self{
+    pub fn new(statusline: &'a mut Statusline, messageline: &'a mut Messageline) -> Self{
         Footer{statusline, messageline}
-    }
     }
 
 

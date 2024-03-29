@@ -36,9 +36,9 @@ fn main()
     let messageline_row_cordi = terminal_height - footer_height + 1;
     let statusline_row_cordi = terminal_height;
 
-    let statusline = Statusline::new(statusline_hight, footer_width, statusline_row_cordi, 0);
+    let mut statusline = Statusline::new(statusline_hight, footer_width, statusline_row_cordi, 0);
     let mut messageline = Messageline::new(messageline_height, footer_width, messageline_row_cordi, 0);
-    let mut footer = Footer::new(&statusline, &mut messageline);
+    let mut footer = Footer::new(&mut statusline, &mut messageline);
 
     // TEXT Window with all the dependencies
     let text_window_height = terminal_height - footer_height;

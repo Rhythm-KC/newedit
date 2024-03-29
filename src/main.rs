@@ -33,8 +33,8 @@ fn main()
     let messageline_height = (footer_height/2) as usize;
     let statusline_hight = footer_height - messageline_height;
     
-    let messageline_row_cordi = terminal_height - footer_height + 1;
-    let statusline_row_cordi = terminal_height;
+    let statusline_row_cordi = terminal_height - footer_height + 1;
+    let messageline_row_cordi = terminal_height;
 
     let mut statusline = Statusline::new(statusline_hight, footer_width, statusline_row_cordi, 0);
     let mut messageline = Messageline::new(messageline_height, footer_width, messageline_row_cordi, 0);

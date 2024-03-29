@@ -1,31 +1,37 @@
-use std::{cmp::min, fs::File, io::{BufReader, BufRead}};
+use std::{fs::File, io::{BufReader, BufRead}};
 
 use crate::{editor::{editorstate::EditorState, keys::Key, leftline::Leftline}, utils::{databuffer::DataBuffer, terminalcommands::{carriage_return, earase_in_line}}};
 
 
 pub struct TextWindow<'a>{
     height: usize,
-    width:usize,
+    _width:usize,
     sidebar: &'a Leftline,
     editorstate: &'a mut EditorState<'a>
 }
 
 impl<'a> TextWindow<'a>
 {
-    pub fn new(height: usize, width: usize, sidebar: &'a Leftline, editorstate: &'a mut EditorState<'a>) -> Self
+    pub fn new(height: usize, _width: usize, sidebar: &'a Leftline, editorstate: &'a mut EditorState<'a>) -> Self
     {
-        TextWindow{height, width, sidebar, editorstate}
+        TextWindow{height, _width, sidebar, editorstate}
 
     }
 
-    pub fn add_window_context_to_buffer(&mut self, buffer: &mut DataBuffer)
+    pub fn add_window_context_to_buffer(&mut self, buffer: &mut DataBuffer) -> Result<(), String>
     {
-        for i in 0.. min(self.editorstate.num_rows, self.height){
-            self.sidebar.add_left_line_data_to_buf(buffer);
-            self.editorstate.fill_data_buffer_with_line(i, buffer);
+        
+        for i in 0..self.height{
+            if i < self.editorstate.num_rows
+            {
+                self.sidebar.add_left_line_data_to_buf(buffer);
+                self.editorstate.fill_data_buffer_with_line(i, buffer)?;
+            }
+
             buffer.append_all(earase_in_line().as_bytes());
             buffer.append_all(carriage_return().as_bytes());
         }
+        Ok(())
     }
 
     pub fn process_key_press_for_text_window(&mut self, key: Key) -> Result<(), &'static str>

@@ -77,14 +77,15 @@ impl<'a> Editor<'a>
     {
         self.editor_buffer.append_all(terminalcommands::hide_cursor().as_bytes());
         self.editor_buffer.append_all(terminalcommands::move_cursor_to_top().as_bytes());
-        self.text_window.add_window_context_to_buffer(&mut self.editor_buffer);
+        self.text_window.add_window_context_to_buffer(&mut self.editor_buffer).map_err(|msg| self.post_msg(msg));
         let (row, col) = self.text_window.get_line_numbers();
         self.footer.add_footer_to_buffer(&mut self.editor_buffer, row, col);
-        self.editor_buffer.append_all(terminalcommands::move_cursor_command(1, 1).as_bytes());
+        let (curr_row, curr_col) = self.text_window.get_cursor_pos();
+        self.editor_buffer.append_all(terminalcommands::move_cursor_command(curr_row, curr_col).as_bytes());
+        self.editor_buffer.append_all(terminalcommands::show_cursor().as_bytes());
         let mut handle = self.output.lock();
         handle.write(self.editor_buffer.empty_the_buffer().as_slice())?;
         handle.flush()?;
-        self.editor_buffer.append_all(terminalcommands::show_cursor().as_bytes());
         self.editor_buffer.clear();
         Ok(())
     }

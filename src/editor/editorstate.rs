@@ -78,7 +78,7 @@ impl<'a> EditorState<'a>{
         if self.cy == usize::max_value(){
             return Err("Max limit reached");
         }
-        if self.cy < max(self.num_rows, self.window.height) - 1{
+        if self.cy < self.num_rows - 1{
             self.cy += 1;
         }
         self.validate_row_cursor_position();
@@ -102,20 +102,28 @@ impl<'a> EditorState<'a>{
     }
 
     fn move_right(&mut self) -> Result<(), &'static str>{
-        let max_right = self.rows[self.cy].get_data().len();
-        if self.cx < max_right{
-            self.cx += 1;
-        }
-        else
+        if let Some(row) = self.rows.get(self.cy)
         {
-            self.move_down()?;
-            self.move_to_start_of_the_row()?;
-        }
-        Ok(())
+            let max_right = row.get_data().len();
+            if self.cx < max_right{
+                self.cx += 1;
+            }
+            else
+            {
+                self.move_down()?;
+                self.move_to_start_of_the_row()?;
+            }
+
+            }
+            Ok(())
     }
     fn move_to_end_of_row(&mut self)-> Result<(), &'static str>{
-        self.cx = self.rows[self.cy].get_data().len();
-        self.validate_row_cursor_position();
+        if let Some(row) = self.rows.get(self.cy)
+        {
+            self.cx = row.get_data().len();
+            self.validate_row_cursor_position();
+
+        }
         Ok(())
     }
 
@@ -157,8 +165,11 @@ impl<'a> EditorState<'a>{
     }
 
     fn validate_row_cursor_position(&mut self){
-        if self.cx > self.rows[self.cy].get_data().len(){
-            self.cx = self.rows[self.cy].get_data().len();
+        if let Some(row) = self.rows.get(self.cy)
+        {
+            if self.cx > row.get_data().len(){
+                self.cx = row.get_data().len();
+            }
         }
     }
 

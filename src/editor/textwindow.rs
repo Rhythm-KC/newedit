@@ -40,9 +40,10 @@ impl<'a> TextWindow<'a>
         self.editorstate.map_keys(key)
     }
 
-    fn open_empty_text_window(&mut self)
+    fn open_empty_text_window(&mut self) -> Result<(), &'static str>
     {
-        let _ = self.editorstate.add_row("".as_bytes());
+        self.editorstate.add_row("".as_bytes())?;
+        Ok(())
 
     }
     pub fn open_text_window(&mut self, file_reader: Option<&mut BufReader<File>>) -> Result<&'static str, &'static str> 
@@ -57,7 +58,7 @@ impl<'a> TextWindow<'a>
         }
         else
         {
-            self.open_empty_text_window();
+            self.open_empty_text_window()?;
             Ok("Opening a new File")           
         }
     }

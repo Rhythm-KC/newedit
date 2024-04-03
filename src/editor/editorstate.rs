@@ -1,7 +1,7 @@
-use std::cmp::{max, min};
+use std::{cmp::{max, min}, io::Read};
 
 
-use crate::{editor::keys::{ArrowType, CtrlKeys, Key}, utils::databuffer::DataBuffer};
+use crate::{editor::keys::{ArrowType, CtrlKeys, Key}, utils::databuffer::{self, DataBuffer}};
 
 pub struct EditorWindow{
     width: usize,
@@ -53,10 +53,11 @@ impl<'a> EditorState<'a>{
 
     pub fn map_keys(&mut self, key: Key)-> Result<(), &'static str>{
         match key {
-            Key::Other(_val) => {Ok(())},
+            Key::DisplayKey(val) => {self.insert_text(val)},
             Key::ArrowKey(arrowtype) => {self.move_cursor(arrowtype)}
             Key::Ctrlkey(ctrlkey)=> {self.move_ctrl_keys(ctrlkey)}
             Key::Quit =>{self.open = false; Ok(())}
+            Key::Backspace => {self.delete_text()}
             _ =>{Ok(())}
         }
 
@@ -202,6 +203,49 @@ impl<'a> EditorState<'a>{
     {
         (min(self.cy+1, self.window.height), self.cx + self.window.x_min_pos)
     }
+    
+    fn delete_text(&mut self) -> Result<(), &'static str>
+    {
+        if self.cx == 0
+        {
+            return Ok(());
+        }
+        if let Some(line) = self.rows.get(self.cy)
+        {
+            let mut prev_line = line.get_data()[0..self.cx-1].to_vec();
+            let after_cursor = &line.get_data()[self.cx..line.len()];
+            prev_line.extend_from_slice(after_cursor);
+            let mut buf = DataBuffer::new();
+            buf.append_all(&prev_line);
+            self.rows[self.cy] = buf;
+            self.move_left()?
+       }
+        
+        Ok(())
+    }
+
+
+    fn insert_text(&mut self, char: u8) ->Result<(), &'static str>{
+        let  data = self.rows.get(self.cy);
+        match data
+        { 
+            Some(line)=>
+            {
+                let prev_state = &line.get_data().clone()[0..self.cx];
+                let mut lstate = prev_state.to_vec(); 
+                lstate.push(char);
+                let end = &line.get_data().clone()[self.cx..line.get_data().len()];
+                lstate.extend_from_slice(end);
+                let mut buf = DataBuffer::new();
+                buf.append_all(&lstate);
+                self.rows[self.cy] = buf;
+                self.move_right()
+
+            },
+            None=>{Ok(())}
+        }
+    }
+
     
     pub fn is_running(&self) -> bool
     {

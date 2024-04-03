@@ -16,8 +16,10 @@ pub enum CtrlKeys{
 pub enum Key{
     Delete,
     EscapeKey,
+    Backspace,
     Quit,
     ArrowKey(ArrowType),
     Ctrlkey(CtrlKeys),
-    Other(u8)
+    DisplayKey(u8),
+    Other()
 }

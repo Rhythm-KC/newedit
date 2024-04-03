@@ -87,5 +87,13 @@ pub fn process_key_press() -> Result<Key, &'static str>{
         return Ok(Key::EscapeKey)
 
     }
-    Ok(Key::Other(buf[0]))
+    if buf[0] as u8 == 127
+    {
+        return Ok(Key::Backspace);
+    }
+    if buf[0].is_ascii_graphic() || buf[0].is_ascii_whitespace()
+    {
+       return Ok(Key::DisplayKey(buf[0]));
+    }
+    Ok(Key::Other())
 }

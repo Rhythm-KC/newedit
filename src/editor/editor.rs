@@ -30,6 +30,7 @@ impl<'a> Editor<'a>
         let bufreader : Option<&mut BufReader<File>> = None;
         if file_name.is_none(){
             let _ = self.text_window.open_text_window(bufreader).map_err(|msg| self.post_msg(msg.to_string()));
+            return;
         }
 
         let file = File::open(file_name.as_ref().unwrap());
@@ -63,7 +64,8 @@ impl<'a> Editor<'a>
 
     pub fn process_input(&mut self){
         let key = inputhandler::process_key_press();
-        match key{
+        match key
+        {
             Ok(key) => {let _ = self.map_keys(key).map_err(|err_msg| self.post_msg(err_msg.to_string()));},
             Err(e) => {self.post_msg(e.to_string())}
         }
@@ -77,7 +79,7 @@ impl<'a> Editor<'a>
     {
         self.editor_buffer.append_all(terminalcommands::hide_cursor().as_bytes());
         self.editor_buffer.append_all(terminalcommands::move_cursor_to_top().as_bytes());
-        self.text_window.add_window_context_to_buffer(&mut self.editor_buffer).map_err(|msg| self.post_msg(msg));
+        let _ = self.text_window.add_window_context_to_buffer(&mut self.editor_buffer).map_err(|msg| self.post_msg(msg));
         let (row, col) = self.text_window.get_line_numbers();
         self.footer.add_footer_to_buffer(&mut self.editor_buffer, row, col);
         let (curr_row, curr_col) = self.text_window.get_cursor_pos();

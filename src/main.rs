@@ -55,6 +55,8 @@ fn main()
     let mut io = io::stdout();
     let _ = io.lock().write(terminalcommands::clear_entire_screen().as_bytes());
     let _ = io.lock().write(terminalcommands::move_cursor_to_top().as_bytes());
+    let _ = io.lock().write(terminalcommands::bold_cursor().as_bytes());
+    let _ = io.flush();
 
     let mut editor = Editor::new(&mut textwindow, &mut footer, &mut io);
     editor.open_editor(filename);

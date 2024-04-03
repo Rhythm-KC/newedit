@@ -47,6 +47,16 @@ pub fn show_cursor() -> String
     create_command("[?25h")
 }
 
+pub fn bold_cursor() -> String
+{
+    create_command("[2 q")
+}
+
+pub fn bar_cursor()-> String
+{
+    create_command("[6 q")
+}
+
 pub fn graphic_rendition_cmd(rendition_type: Rendition) -> String
 {
     let formatter = |code:u8| format!("{}[{}m", ESC_SEQ, code);
